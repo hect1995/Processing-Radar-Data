@@ -6,7 +6,7 @@ All packages used are included in 3rd_party except [libpng](http://www.libpng.or
 $ mkdir build
 $ cmake ..
 $ make
-$ ./ubimet ${absolute path where the data is} ${where to save csv}
+$ ./ubimet ${absolute path where the binary is} ${where to save csv}
 ```
 To obtain `longitude` and `latitude` I convert from `(ROW,COL)` and add it to `v0` and `v1`.
 
