@@ -16,12 +16,21 @@
 #include <array>
 #include <png.h>
 
-
+/**
+ * Constructor
+ * @param in_filename Absolute path of the binary file to be read.
+ * @param out_csv Name of the generated csv file.
+ */
 Data::Data(const char* in_filename,const char* out_csv): input_filename(in_filename), csv_filename(out_csv)
 {
     readFile();
 }
 
+/**
+ * Obtain Phi projection
+ * @param row Row of the concrete pixel being converted.
+ * @param col Column of the concrete pixel being converted.
+ */
 float Data::productPh(int row, int col){
     return (1.570796326795-2*atan(0.404026225835*pow((1/sin(atan(1/(5899179.2/\
     ((5676531.8*pow((tan((1.570796326795-(v1*0.017453292520))/2)/\
@@ -37,6 +46,11 @@ float Data::productPh(int row, int col){
                                                      0.737361597616)));
 }
 
+/**
+ * Obtain lambda projection.
+ * @param row Row of the concrete pixel being converted.
+ * @param col Column of the concrete pixel being converted.
+ */
 float Data::productLA(int row, int col){
     return atan(1/(5899179.2/((5676531.8*pow((tan((1.570796326795-(v1*0.017453292520))\
     /2)/0.373884679485),0.737361597616)*sin(0.012869387656*(v0-13.333333333))\
@@ -48,6 +62,11 @@ float Data::productLA(int row, int col){
     0.737361597616+0.232710566928;
 }
 
+/**
+ * From pixels to (lat,lon)
+ * @param row Row of the concrete pixel being converted.
+ * @param col Column of the concrete pixel being converted.
+ */
 Spherical Data::pixelToGeographical(int row, int col){
     Spherical conversion{};
     conversion.latitude = productLA(row,col) + v1;
@@ -55,6 +74,12 @@ Spherical Data::pixelToGeographical(int row, int col){
     return conversion;
 }
 
+/**
+ * Save the corresponding (lon,lat) from the image into CSV with their corresponding value, which has units
+ * mm/h
+ * @param sph Vector with the (lat,lon) for each position.
+ * @param value The mm/h for each position in the max image
+ */
 void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short int>& value){
     std::ofstream myfile;
     myfile.open (csv_filename);
@@ -66,6 +91,11 @@ void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short 
     myfile.close();
 }
 
+/**
+ * Create the maximum image from all the verical layers. The L layers are used and for each (x,y) pixel I 
+ * get the maximum of (x,y) in all L layers. Final result has same dimension as a single layer picture.
+ * @param sph Vector with the (lat,lon) for each position.
+ */
 void Data::maxColumn(const std::vector<Spherical> &sph){
     std::vector<short int> max_picture;
     /*for (int i=0;i<L;i++)
@@ -101,8 +131,14 @@ void Data::maxColumn(const std::vector<Spherical> &sph){
     createCsv(sph, max_picture);
 }
 
-void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image){
-
+/**
+ * Create the heatmap PNG file,  suing the package in https://github.com/lucasb-eyer/libheatmap
+ * @param Nx Number of columns.
+ * @param Ny Number of rows.
+ * @param image Array with the data to be converted to PNG.
+ * @param counter To be included in the filename to distinguish between pictures.
+ */
+void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, int counter){
     heatmap_t* hm = heatmap_new(Nx, Ny);
     for(int i = 0 ; i < image.size() ; ++i) {
         short int val = image[i];
@@ -111,9 +147,12 @@ void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image){
     unsigned char im[Nx*Ny*4];
     heatmap_render_default_to(hm, &im[0]); // Render map into picture
     heatmap_free(hm); // I do not need the map anymore
-    writepng("heatmap.png", Nx, Ny, im);
+    writepng("heatmap"+std::to_string(counter)+".png", Nx, Ny, im);
 }
 
+/**
+ * Convert from pixels in the image into (lat,lon)
+ */
 std::vector<Spherical> Data::convertCoordinates(){
     std::vector<Spherical> translation;
     int row;
@@ -127,6 +166,10 @@ std::vector<Spherical> Data::convertCoordinates(){
     return translation;
 }
 
+/**
+ * Read the binary file. While reading the file it saves as well
+ * pictures for each vertical layer
+ */
 void Data::readFile(){
     std::streampos fileSize;
     std::ifstream file(input_filename, std::ios::binary);
@@ -152,7 +195,7 @@ void Data::readFile(){
     short int counter = 0;
     for (int i=26; i<26+N*2; i+=2)
     {
-        quant_levels[++counter] = fileData[i] | (fileData[i+1] << 8); // each value needs to be multiplied by 1/10 [mm/h]
+        quant_levels[++counter] = fileData[i] | (fileData[i+1] << 8);
     }
     int init = 26+N*2;
     for (int i=0;i<L;i++)
@@ -163,13 +206,28 @@ void Data::readFile(){
             aux.push_back(quant_levels[fileData[j]]);
         }
         Pixels.push_back(aux);
+        plotImage(Nx, Ny, aux, i);
     }
-    int count = 0;
+}
+
+/**
+ * Will call the convert cordinates function to obtain (lat,lon)
+ * and then will create PNG image and CSV file
+ */
+void Data::obtain_results()
+{
     std::vector<Spherical> conversion = convertCoordinates();
     maxColumn(conversion);
 }
 
-// https://github.com/lucasb-eyer/libheatmap/blob/master/examples/simplest_libpng.cpp
+/**
+ * Write from array into PNG.
+ * Extracted from https://github.com/lucasb-eyer/libheatmap/blob/master/examples/simplest_libpng.cpp
+ * @param filename Name of the saved PNG file.
+ * @param Nx Number of columns.
+ * @param Ny Number of rows.
+ * @param data Array with the data to be converted to PNG.
+ */
 unsigned int Data::writepng(const std::string& filename, int Nx, int Ny, const unsigned char* data)
 {
     // NULLS are user error/warning functions.
