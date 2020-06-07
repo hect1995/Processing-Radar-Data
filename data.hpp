@@ -32,7 +32,10 @@ private:
     short int N;
     std::map<short int, short int> quant_levels;
     std::vector<std::vector<short int>> Pixels;
-    float max_lat, min_lat, max_lon, min_lon;
+    float max_lat;
+    float min_lat = 180;
+    float max_lon;
+    float min_lon = 180;
     
     const char* input_filename;
     const char* csv_filename;
