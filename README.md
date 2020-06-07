@@ -13,3 +13,6 @@ To obtain `longitude` and `latitude` I convert from `(ROW,COL)` and add it to `v
 The resulting image I get is:
 
 <img src="https://github.com/hect1995/UBIMET_Challenge/blob/master/result/heatmap.png">
+
+Using Tableau (get the data from C++ and import it as CSV) I get this map:
+<img src="https://github.com/hect1995/UBIMET_Challenge/blob/master/result/result_Tableau.png">
