@@ -8,7 +8,7 @@ $ cmake ..
 $ make
 $ ./ubimet ${absolute path where the binary is} ${where to save csv}
 ```
-To obtain `longitude` and `latitude` I convert from `(ROW,COL)` and add it to `v0` and `v1`.
+To obtain `longitude` and `latitude` I convert from `(ROW,COL)` using the projection formulas given.
 
 The resulting image I get is:
 
