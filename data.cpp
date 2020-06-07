@@ -195,10 +195,10 @@ void Data::readFile(){
     L = fileData[22];
     distance = fileData[23] | (fileData[24] << 8);
     N = fileData[25];
-    short int counter = 0;
+    short int counter = L;
     for (int i=26; i<26+N*2; i+=2)
     {
-        quant_levels[++counter] = fileData[i] | (fileData[i+1] << 8);
+        quant_levels[--counter] = fileData[i] | (fileData[i+1] << 8);
     }
     int init = 26+N*2;
     for (int i=0;i<L;i++)
