@@ -12,4 +12,4 @@ To obtain `longitude` and `latitude` I convert from `(ROW,COL)` and add it to `v
 
 The resulting image I get is:
 
-<img src="https://github.com/hect1995/UBIMET_Challenge/blob/master/result/heatmap.png" width="250" height="400">
+<img src="https://github.com/hect1995/UBIMET_Challenge/blob/master/result/heatmap.png">
