@@ -50,6 +50,7 @@ float Data::productPh(int row, int col){
  * Obtain lambda projection.
  * @param row Row of the concrete pixel being converted.
  * @param col Column of the concrete pixel being converted.
+ * @return lambda projection with respect the radar position
  */
 float Data::productLA(int row, int col){
     return atan(1/(5899179.2/((5676531.8*pow((tan((1.570796326795-(v1*0.017453292520))\
@@ -66,6 +67,7 @@ float Data::productLA(int row, int col){
  * From pixels to (lat,lon)
  * @param row Row of the concrete pixel being converted.
  * @param col Column of the concrete pixel being converted.
+ * @return Struct defining (lat,lon)
  */
 Spherical Data::pixelToGeographical(int row, int col){
     Spherical conversion{};
@@ -152,6 +154,7 @@ void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, int co
 
 /**
  * Convert from pixels in the image into (lat,lon)
+ * @return Vector of size (NX*NY) of Spherical objects
  */
 std::vector<Spherical> Data::convertCoordinates(){
     std::vector<Spherical> translation;
@@ -227,6 +230,7 @@ void Data::obtain_results()
  * @param Nx Number of columns.
  * @param Ny Number of rows.
  * @param data Array with the data to be converted to PNG.
+ * @return Confirm operation was successful
  */
 unsigned int Data::writepng(const std::string& filename, int Nx, int Ny, const unsigned char* data)
 {
