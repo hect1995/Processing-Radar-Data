@@ -12,10 +12,10 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include "3rd_party/heatmap.h"
-#include "3rd_party/lodepng.h"
 #include <array>
 #include <png.h>
+#include "3rd_party/heatmap.h"
+#include "3rd_party/lodepng.h"
 
 /**
  * Constructor
