@@ -25,13 +25,14 @@ class Data{
 private:
     short int id; // 1 byte
     char date[17];
-    short int Ny;
-    short int Nx;
+    short int Ny; // # rows
+    short int Nx; // # columns
     short int L;
     short int distance;
     short int N;
     std::map<short int, short int> quant_levels;
     std::vector<std::vector<short int>> Pixels;
+    float max_lat, min_lat, max_lon, min_lon;
     
     const char* input_filename;
     const char* csv_filename;
@@ -46,7 +47,8 @@ public:
     Data(const char* in_filename, const char* out_csv="output.csv");
     std::vector<Spherical> convertCoordinates();
     Spherical pixelToGeographical(int row, int col);
-    void plotImage(int Nx, int Ny, const std::vector<short int>& image, int counter=0);
+    void plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, int counter=0);
+    void obtainLimitsMap(const std::vector<Spherical> &sph);
     static float productPh(int row, int col);
     static float productLA(int row, int col);
     void maxColumn(const std::vector<Spherical> &sph);

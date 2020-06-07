@@ -10,6 +10,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include "3rd_party/heatmap.h"
 #include "3rd_party/lodepng.h"
@@ -71,8 +72,8 @@ float Data::productLA(int row, int col){
  */
 Spherical Data::pixelToGeographical(int row, int col){
     Spherical conversion{};
-    conversion.latitude = productLA(row,col) + v1;
-    conversion.longitude = productPh(row,col) + v0;
+    conversion.latitude = productPh(row,col)*180/M_PI;
+    conversion.longitude = productLA(row,col)*180/M_PI;
     return conversion;
 }
 
@@ -85,10 +86,10 @@ Spherical Data::pixelToGeographical(int row, int col){
 void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short int>& value){
     std::ofstream myfile;
     myfile.open (csv_filename);
-    myfile << "lat;lon;value\n";
+    myfile << "id;lat;lon;value\n";
     for (int i=0;i<sph.size();i++)
     {
-        myfile << sph[i].latitude << ";" << sph[i].longitude << ";" << value[i] << "\n";
+        myfile << std::to_string(i) << ";" << sph[i].latitude << ";" << sph[i].longitude << ";" << value[i] << "\n";
     }
     myfile.close();
 }
@@ -129,8 +130,21 @@ void Data::maxColumn(const std::vector<Spherical> &sph){
         }
         max_picture.push_back(max_col_i);
     }
-    plotImage(Nx, Ny, max_picture);
+    plotImage(Nx, Ny, max_picture,sph);
     createCsv(sph, max_picture);
+}
+
+/**
+ * Obtain the maximum/minimum latitude and longitude from the data
+ */
+void Data::obtainLimitsMap(const std::vector<Spherical> &sph){
+    auto check = [this](const Spherical& sphere) { 
+        if (sphere.latitude > max_lat) {max_lat = sphere.latitude;}
+        else if (sphere.latitude < min_lat) {min_lat = sphere.latitude;}
+        if (sphere.longitude > max_lon) {max_lon = sphere.longitude;}
+        else if (sphere.longitude < min_lon) {min_lon = sphere.longitude;}
+    };
+    std::for_each(sph.cbegin(), sph.cend(), check);
 }
 
 /**
@@ -140,11 +154,17 @@ void Data::maxColumn(const std::vector<Spherical> &sph){
  * @param image Array with the data to be converted to PNG.
  * @param counter To be included in the filename to distinguish between pictures.
  */
-void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, int counter){
+void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, int counter){
     heatmap_t* hm = heatmap_new(Nx, Ny);
+    short int value;
+    int aprox_row;
+    int aprox_column;
+    obtainLimitsMap(sph);
     for(int i = 0 ; i < image.size() ; ++i) {
-        short int val = image[i];
-        heatmap_add_weighted_point(hm, i%Nx, i/Nx, val);
+        value = image[i];
+        aprox_row = (int)round(Ny*static_cast<double>(sph[i].latitude-min_lat)/(max_lat-min_lat));
+        aprox_column = (int)round(Nx*static_cast<double>(sph[i].longitude-min_lat)/(max_lon-min_lon));
+        heatmap_add_weighted_point(hm, aprox_column, aprox_row, value); // TODO: Should plot based on (lat,row) not (row,column)
     }
     unsigned char im[Nx*Ny*4];
     heatmap_render_default_to(hm, &im[0]); // Render map into picture
@@ -209,7 +229,7 @@ void Data::readFile(){
             aux.push_back(quant_levels[fileData[j]]);
         }
         Pixels.push_back(aux);
-        plotImage(Nx, Ny, aux, i);
+        //plotImage(Nx, Ny, aux, i);
     }
 }
 
