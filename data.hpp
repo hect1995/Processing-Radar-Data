@@ -46,12 +46,12 @@ public:
     Data(const char* in_filename, const char* out_csv="output.csv");
     std::vector<Spherical> convertCoordinates();
     Spherical pixelToGeographical(int row, int col);
-    void plotImage(int Nx, int Ny, const std::vector<short int>& image);
+    void plotImage(int Nx, int Ny, const std::vector<short int>& image, int counter=0);
     static float productPh(int row, int col);
     static float productLA(int row, int col);
     void maxColumn(const std::vector<Spherical> &sph);
     void createCsv(const std::vector<Spherical>& sph, const std::vector<short int>& value);
-
+    void obtain_results();
     void readFile();
     unsigned int writepng(const std::string& filename, int Nx, int Ny, const unsigned char* data);
 };
