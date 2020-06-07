@@ -101,23 +101,6 @@ void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short 
  */
 void Data::maxColumn(const std::vector<Spherical> &sph){
     std::vector<short int> max_picture;
-    /*for (int i=0;i<L;i++)
-    {
-        short int max_col_i[Nx]; // all elements to 0
-        for (int j=0; j<Nx; j++){
-            max_col_i[j] = 0;
-        }
-        for (int j=0; j<Pixels[i].size(); j++){
-            if (Pixels[i][j] > max_col_i[j%Nx])
-            {
-                max_col_i[j%Nx] = Pixels[i][j];
-            }
-        }
-        for (auto elem : max_col_i)
-        {
-            max_picture.push_back(elem);
-        }
-    }*/
     for (int i=0;i<Pixels[0].size();i++)
     {
         short int max_col_i = 0;
@@ -162,7 +145,7 @@ void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const 
     obtainLimitsMap(sph); // gives the maximum/minimum latitude and longitude as max_lat, min_lat, max_long, min_long
     for(int i = 0 ; i < image.size() ; ++i) {
         value = image[i];
-        aprox_row = (int)round(Ny*static_cast<double>(sph[i].latitude-min_lat)/(max_lat-min_lat));
+        aprox_row = Ny - (int)round(Ny*static_cast<double>(sph[i].latitude-min_lat)/(max_lat-min_lat)); // Added Ny begining as orifin is bottom left
         aprox_column = (int)round(Nx*static_cast<double>(sph[i].longitude-min_lon)/(max_lon-min_lon));
         heatmap_add_weighted_point(hm, aprox_column, aprox_row, value); // TODO: Should plot based on (lat,row) not (row,column)
     }
