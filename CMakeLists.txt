@@ -24,5 +24,4 @@ else ()
 endif ()
 
 add_executable(ubimet main.cpp data.cpp 3rd_party/lodepng.cpp 3rd_party/heatmap.c ${LIBPNG_LINK_FLAGS})
-target_link_libraries(ubimet ${OpenCV_LIBS})
 set_property(TARGET ubimet PROPERTY CXX_STANDARD 17)

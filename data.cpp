@@ -86,10 +86,10 @@ Spherical Data::pixelToGeographical(int row, int col){
 void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short int>& value){
     std::ofstream myfile;
     myfile.open (csv_filename);
-    myfile << "id;lat;lon;value\n";
+    myfile << "lat;lon;value\n";
     for (int i=0;i<sph.size();i++)
     {
-        myfile << std::to_string(i) << ";" << sph[i].latitude << ";" << sph[i].longitude << ";" << value[i] << "\n";
+        myfile << sph[i].latitude << ";" << sph[i].longitude << ";" << value[i] << "\n";
     }
     myfile.close();
 }
@@ -149,8 +149,8 @@ void Data::obtainLimitsMap(const std::vector<Spherical> &sph){
 
 /**
  * Create the heatmap PNG file,  suing the package in https://github.com/lucasb-eyer/libheatmap
- * @param Nx Number of columns.
- * @param Ny Number of rows.
+ * @param Nx Number of columns of data.
+ * @param Ny Number of rows of data.
  * @param image Array with the data to be converted to PNG.
  * @param counter To be included in the filename to distinguish between pictures.
  */
@@ -159,11 +159,11 @@ void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const 
     short int value;
     int aprox_row;
     int aprox_column;
-    obtainLimitsMap(sph);
+    obtainLimitsMap(sph); // gives the maximum/minimum latitude and longitude as max_lat, min_lat, max_long, min_long
     for(int i = 0 ; i < image.size() ; ++i) {
         value = image[i];
         aprox_row = (int)round(Ny*static_cast<double>(sph[i].latitude-min_lat)/(max_lat-min_lat));
-        aprox_column = (int)round(Nx*static_cast<double>(sph[i].longitude-min_lat)/(max_lon-min_lon));
+        aprox_column = (int)round(Nx*static_cast<double>(sph[i].longitude-min_lon)/(max_lon-min_lon));
         heatmap_add_weighted_point(hm, aprox_column, aprox_row, value); // TODO: Should plot based on (lat,row) not (row,column)
     }
     unsigned char im[Nx*Ny*4];
