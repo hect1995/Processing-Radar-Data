@@ -3,9 +3,6 @@ project(ubimet_vs)
 
 set(CMAKE_CXX_STANDARD 17)
 #set(LDLIBS "-lstdc++fs")
-find_package( OpenCV REQUIRED )
-
-include_directories(${OpenCV_INCLUDE_DIRS})
 
 # search for pkg-config
 include (FindPkgConfig)
