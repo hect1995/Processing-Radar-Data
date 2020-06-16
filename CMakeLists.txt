@@ -32,7 +32,7 @@ find_package(Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED)
 
 #set(TS_FILES trial_en_DE.ts)
 
-add_executable(trial
+add_executable(ubimet
   main.cpp
   #${TS_FILES}
   data.cpp
@@ -41,8 +41,8 @@ add_executable(trial
   3rd_party/heatmap.c
   ${LIBPNG_LINK_FLAGS}
 )
-target_link_libraries(trial Qt5::Core Qt5::Widgets)
+target_link_libraries(ubimet Qt5::Core Qt5::Widgets)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
-#set_property(TARGET trial PROPERTY CXX_STANDARD 17)
+#set_property(TARGET ubimet PROPERTY CXX_STANDARD 17)
