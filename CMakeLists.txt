@@ -1,9 +1,16 @@
-cmake_minimum_required(VERSION 3.13)
-project(ubimet_vs)
+cmake_minimum_required(VERSION 3.5)
+
+project(trial LANGUAGES C CXX)
+set(ANDROID_NDK_ROOT "/Users/hectoresteban/Documents/C++/Qt/android-ndk-r21d")
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(LDLIBS "-lstdc++fs")
-
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # search for pkg-config
 include (FindPkgConfig)
 if (NOT PKG_CONFIG_FOUND)
@@ -20,5 +27,21 @@ else ()
     link_libraries (${LIBPNG_LIBRARIES})
 endif ()
 
-add_executable(ubimet main.cpp data.cpp 3rd_party/lodepng.cpp 3rd_party/heatmap.c ${LIBPNG_LINK_FLAGS})
-set_property(TARGET ubimet PROPERTY CXX_STANDARD 17)
+find_package(Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED)
+
+#set(TS_FILES trial_en_DE.ts)
+
+add_executable(trial
+  main.cpp
+  #${TS_FILES}
+  data.cpp
+  ImageViewer.cpp
+  3rd_party/lodepng.cpp
+  3rd_party/heatmap.c
+  ${LIBPNG_LINK_FLAGS}
+)
+target_link_libraries(trial Qt5::Core Qt5::Widgets)
+
+qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+
+#set_property(TARGET trial PROPERTY CXX_STANDARD 17)

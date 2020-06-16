@@ -16,6 +16,13 @@
 #include <png.h>
 #include "3rd_party/heatmap.h"
 #include "3rd_party/lodepng.h"
+#include "ImageViewer.hpp"
+#include <QImage>
+#include <QPixmap>
+#include <QLabel>
+#include <QApplication>
+
+
 
 /**
  * Constructor
@@ -99,7 +106,7 @@ void Data::createCsv(const std::vector<Spherical>& sph, const std::vector<short 
  * get the maximum of (x,y) in all L layers. Final result has same dimension as a single layer picture.
  * @param sph Vector with the (lat,lon) for each position.
  */
-void Data::maxColumn(const std::vector<Spherical> &sph){
+void Data::maxColumn(const std::vector<Spherical> &sph, QApplication &aplic){
     std::vector<short int> max_picture;
     for (int i=0;i<Pixels[0].size();i++)
     {
@@ -113,7 +120,7 @@ void Data::maxColumn(const std::vector<Spherical> &sph){
         }
         max_picture.push_back(max_col_i);
     }
-    plotImage(Nx, Ny, max_picture,sph);
+    plotImage(Nx, Ny, max_picture,sph,aplic);
     createCsv(sph, max_picture);
 }
 
@@ -130,6 +137,7 @@ void Data::obtainLimitsMap(const std::vector<Spherical> &sph){
     std::for_each(sph.cbegin(), sph.cend(), check);
 }
 
+
 /**
  * Create the heatmap PNG file,  suing the package in https://github.com/lucasb-eyer/libheatmap
  * @param Nx Number of columns of data.
@@ -137,7 +145,7 @@ void Data::obtainLimitsMap(const std::vector<Spherical> &sph){
  * @param image Array with the data to be converted to PNG.
  * @param counter To be included in the filename to distinguish between pictures.
  */
-void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, int counter){
+void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, QApplication &aplic, int counter){
     heatmap_t* hm = heatmap_new(Nx, Ny);
     short int value;
     int aprox_row;
@@ -153,7 +161,22 @@ void Data::plotImage(int Nx, int Ny, const std::vector<short int>& image, const 
     heatmap_render_default_to(hm, &im[0]); // Render map into picture
     heatmap_free(hm); // I do not need the map anymore
     writepng("heatmap"+std::to_string(counter)+".png", Nx, Ny, im);
+    QImage i;
+    QWidget window;
+    //QLabel l;//("Result Map", &window);
+
+    i = QImage(im, Nx, Ny, QImage::Format_RGBA8888);
+    ImageViewer viewer;
+    viewer.setImage(i);
+
+    //l.setPixmap(QPixmap::fromImage(i));
+    //l.setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    //l.setScaledContents(true);
+    viewer.show();
+    aplic.exec();
 }
+
+
 
 /**
  * Convert from pixels in the image into (lat,lon)
@@ -221,10 +244,10 @@ void Data::readFile(){
  * Will call the convert cordinates function to obtain (lat,lon)
  * and then will create PNG image and CSV file
  */
-void Data::obtain_results()
+void Data::obtain_results(QApplication &aplic)
 {
     std::vector<Spherical> conversion = convertCoordinates();
-    maxColumn(conversion);
+    maxColumn(conversion, aplic);
 }
 
 /**

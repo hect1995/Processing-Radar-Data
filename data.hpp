@@ -13,6 +13,8 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <QApplication>
+
 
 
 struct Spherical{
@@ -50,13 +52,13 @@ public:
     Data(const char* in_filename, const char* out_csv="output.csv");
     std::vector<Spherical> convertCoordinates();
     Spherical pixelToGeographical(int row, int col);
-    void plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, int counter=0);
+    void plotImage(int Nx, int Ny, const std::vector<short int>& image, const std::vector<Spherical> &sph, QApplication &aplic, int counter=0);
     void obtainLimitsMap(const std::vector<Spherical> &sph);
     static float productPh(int row, int col);
     static float productLA(int row, int col);
-    void maxColumn(const std::vector<Spherical> &sph);
+    void maxColumn(const std::vector<Spherical> &sph, QApplication &aplic);
     void createCsv(const std::vector<Spherical>& sph, const std::vector<short int>& value);
-    void obtain_results();
+    void obtain_results(QApplication &aplic);
     void readFile();
     unsigned int writepng(const std::string& filename, int Nx, int Ny, const unsigned char* data);
 };
