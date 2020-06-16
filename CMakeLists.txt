@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(trial LANGUAGES C CXX)
 set(ANDROID_NDK_ROOT "/Users/hectoresteban/Documents/C++/Qt/android-ndk-r21d")
+set(CMAKE_PREFIX_PATH "/Users/hectoresteban/Qt/5.15.0/clang_64/lib/cmake/Qt5")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
