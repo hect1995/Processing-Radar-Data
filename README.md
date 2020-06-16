@@ -1,6 +1,10 @@
 # UBIMET_Challenge
-All packages used are included in 3rd_party except [libpng16](http://www.libpng.org/pub/png/libpng.html), that needs to be installed.
+All packages used are included in 3rd_party except:
+* [libpng16](http://www.libpng.org/pub/png/libpng.html)
+* [Qt5](https://www.qt.io/)
+* [Android NDK](https://developer.android.com/ndk/downloads)
 
+Once all packages are installed it is required to add the path to Qt5 and Android NDK in the [CMakeList.txt](CMakeLists.txt) file.
 ## To run:
 ```
 $ mkdir build
