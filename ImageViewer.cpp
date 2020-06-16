@@ -17,6 +17,7 @@
 #include <QScrollBar>
 #include <QStandardPaths>
 #include <QStatusBar>
+#include <QSize>
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #  include <QtPrintSupport/qtprintsupportglobal.h>
@@ -38,10 +39,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     scrollArea->setWidget(imageLabel);
     scrollArea->setVisible(false);
     setCentralWidget(scrollArea);
-
     createActions();
-
-    resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 }
 
 //! [0]
@@ -76,13 +74,12 @@ void ImageViewer::setImage(const QImage &newImage)
     if (image.colorSpace().isValid())
         image.convertToColorSpace(QColorSpace::SRgb);
     imageLabel->setPixmap(QPixmap::fromImage(image));
-//! [4]
     scaleFactor = 1.0;
-
     scrollArea->setVisible(true);
     printAct->setEnabled(true);
     fitToWindowAct->setEnabled(true);
     updateActions();
+    resize(QSize(newImage.width(),newImage.height())); // Fit the size of the screen to the image
 
     if (!fitToWindowAct->isChecked())
         imageLabel->adjustSize();
