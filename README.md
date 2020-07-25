@@ -1,4 +1,4 @@
-# UBIMET_Challenge
+# Processing of Radar data
 All packages used are included in 3rd_party except [libpng16](http://www.libpng.org/pub/png/libpng.html), that needs to be installed.
 
 ## To run:
